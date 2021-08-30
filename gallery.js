@@ -102,7 +102,7 @@ function checkTime(){
     timeNow = timeNow.getUTCMinutes()
     let timeThen = localStorage.getItem('time')
 
-    if(timeNow - timeThen >= 1){
+    if(timeNow - timeThen >= 10){
         localStorage.removeItem('token')
         localStorage.removeItem('time')
         document.location.replace('/login.html')
