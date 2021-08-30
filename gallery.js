@@ -105,6 +105,6 @@ function checkTime(){
     if(timeNow - timeThen >= 1){
         localStorage.removeItem('token')
         localStorage.removeItem('time')
-        document.location.replace('/module1-part3-gallery.JS/login.html')
+        document.location.replace('./login.html')
     }
 }
