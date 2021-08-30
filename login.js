@@ -1,7 +1,7 @@
 const url =  'https://glq7fjiy07.execute-api.us-east-1.amazonaws.com/api/login';
 const form = document.getElementById('login');
 
-import regex  from '/regexPassword.js'
+import regex  from './regexPassword.js'
 
 class User{
     constructor(email, password) {
@@ -59,7 +59,7 @@ let submit = form.onsubmit = async(event) => {
             let time = new Date()
             time = time.getUTCMinutes()
             localStorage.setItem('time', time)
-            document.location.replace('/gallery.html')
+            document.location.replace('./gallery.html')
         }
 
     } catch(err){
