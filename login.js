@@ -59,7 +59,7 @@ let submit = form.onsubmit = async(event) => {
             let time = new Date()
             time = time.getUTCMinutes()
             localStorage.setItem('time', time)
-            document.location.replace('/module1-part3-gallery.JS/gallery.html')
+            document.location.replace('./gallery.html')
         }
 
     } catch(err){
