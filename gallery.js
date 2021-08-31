@@ -37,7 +37,7 @@ async function fetchPhotos(fetchurl){
 }
 
 btnBack.addEventListener('click', function(){
-    if(pageNumber === 1){
+    if(pageNumber === '1'){
         localStorage.setItem('page', '5')
         pageNumber = Number(localStorage.getItem('page'))
         console.log(localStorage.getItem('page'))
@@ -51,7 +51,7 @@ btnBack.addEventListener('click', function(){
 })
 
 btnNext.addEventListener('click', function(){
-    if(pageNumber === 5){
+    if(pageNumber === '5'){
         localStorage.setItem('page', '1')
         pageNumber = Number(localStorage.getItem('page'))
         console.log(localStorage.getItem('page'))
