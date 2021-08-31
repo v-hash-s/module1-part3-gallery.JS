@@ -36,33 +36,34 @@ async function fetchPhotos(fetchurl){
     }
 }
 
-btnBack.addEventListener('click', function(){
-    if(pageNumber === '1'){
-        localStorage.setItem('page', '5')
-        pageNumber = Number(localStorage.getItem('page'))
-        console.log(localStorage.getItem('page'))
-        return createGalleryPage(pageNumber)
-    } else {
-        pageNumber = Number(localStorage.getItem('page'))
-        createGalleryPage(--pageNumber)
-        localStorage.setItem('page', pageNumber)
+function changePageNumber(number){
+    if(pageNumber > 5){
+        pageNumber -= 5;
     }
+    if(pageNumber < 1){
+        pageNumber += 5;
+    }
+    return number
+}
+
+btnBack.addEventListener('click', function(){
+
+    --pageNumber;
+    changePageNumber(pageNumber)
+
+    localStorage.setItem('page', pageNumber)
+    createGalleryPage(pageNumber)
     
 })
 
 btnNext.addEventListener('click', function(){
-    if(pageNumber === '5'){
-        localStorage.setItem('page', '1')
-        pageNumber = Number(localStorage.getItem('page'))
-        console.log(localStorage.getItem('page'))
-        return createGalleryPage(pageNumber)
-    } else{
-        pageNumber = Number(localStorage.getItem('page'))
-        createGalleryPage(++pageNumber)
-        localStorage.setItem('page', pageNumber)
-    }
-    
-    
+
+    ++pageNumber;
+    changePageNumber(pageNumber)
+
+    localStorage.setItem('page', pageNumber)
+    createGalleryPage(pageNumber)
+
 })
 
 async function createGalleryPage(pageNumber){
