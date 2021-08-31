@@ -3,49 +3,21 @@ const url = new URL('https://glq7fjiy07.execute-api.us-east-1.amazonaws.com/api/
 const urlSearchParams = new URLSearchParams(window.location.search);
 const params = Object.fromEntries(urlSearchParams.entries());
 
-let gallery = document.getElementById('gallery');
+
+const pageSearch = /\?page=[1-5]/g
+
+const gallery = document.getElementById('gallery');
 const btnBack = document.getElementById('back');
 const btnNext = document.getElementById('next');
 
-let pageNumber = localStorage.getItem('page') ?? 1;
-localStorage.setItem('page', pageNumber)
+let pageNumber = localStorage.getItem('page') ?? localStorage.setItem('page', 1);
 
-let pageSearch = /\?page=[0-9]/g
-let str = location.search
-
-if(str.match(pageSearch)){
-    getParams()
-} else {
-    createGallery(pageNumber)
+if(location.search.match(pageSearch)){
+    localStorage.setItem('page', params.page)
+    pageNumber = localStorage.getItem('page')
 }
 
-btnBack.addEventListener('click', function(){
-    let pageNum = Number(localStorage.getItem('page'));
-
-    if(pageNum == 1){
-        localStorage.setItem('page', 5)
-        createGallery(localStorage.getItem('page'));
-    } else{
-        pageNum--;
-        localStorage.setItem('page', pageNum);
-        createGallery(pageNum);
-        console.log(pageNum)
-    }
-})
-
-btnNext.addEventListener('click', function(){
-    let pageNum = Number(localStorage.getItem('page'));
-
-    if(pageNum == 5){
-        localStorage.setItem('page', 1)
-        createGallery(localStorage.getItem('page'));
-    } else{
-        pageNum++;
-        localStorage.setItem('page', pageNum);
-        createGallery(pageNum);
-        console.log(pageNum)
-    }
-})
+createGalleryPage(pageNumber)
 
 
 async function fetchPhotos(fetchurl){
@@ -64,47 +36,73 @@ async function fetchPhotos(fetchurl){
     }
 }
 
-async function createGallery(pageNumber){
-    checkTime()
-
-    gallery.innerHTML = "";
-
-    let newUrl = url + pageNumber;
-    const urlArr = await fetchPhotos(newUrl);
-    
-    for(let i = 0; i < 10; i++){
-        gallery.innerHTML += `<img src=${urlArr[i]} height='400' width='400' style="object-fit: cover">`;
+btnBack.addEventListener('click', function(){
+    if(pageNumber === 1){
+        localStorage.setItem('page', '5')
+        pageNumber = Number(localStorage.getItem('page'))
+        console.log(localStorage.getItem('page'))
+        return createGalleryPage(pageNumber)
+    } else {
+        pageNumber = Number(localStorage.getItem('page'))
+        createGalleryPage(--pageNumber)
+        localStorage.setItem('page', pageNumber)
     }
+    
+})
 
-    location.search = `?page=${pageNumber}`
+btnNext.addEventListener('click', function(){
+    if(pageNumber === 5){
+        localStorage.setItem('page', '1')
+        pageNumber = Number(localStorage.getItem('page'))
+        console.log(localStorage.getItem('page'))
+        return createGalleryPage(pageNumber)
+    } else{
+        pageNumber = Number(localStorage.getItem('page'))
+        createGalleryPage(++pageNumber)
+        localStorage.setItem('page', pageNumber)
+    }
+    
+    
+})
+
+async function createGalleryPage(pageNumber){
+    try{
+        await displayPhotos(pageNumber)
+        checkTime()
+        updateLocation()
+    }
+    catch(err){
+        alert(err.message)
+    }
 }
 
-async function getParams(){
+async function displayPhotos(pageNumber){
     try{
-        localStorage.setItem('page', params.page)
-        let newUrl =  url + Number(localStorage.getItem('page'))
+        let newUrl = 'https://glq7fjiy07.execute-api.us-east-1.amazonaws.com/api/gallery?page=' + pageNumber
+        let fetchedPhotos = await(fetchPhotos(newUrl))
+        
         gallery.innerHTML = "";
-
-        let urlArr = await(fetchPhotos(newUrl))
-
-        for(let i = 0; i < 10; i++){
-        gallery.innerHTML += `<img src=${urlArr[i]} height='400' width='400' style="object-fit: cover">`;
+        
+        fetchedPhotos.forEach(item => gallery.innerHTML += `<img src=${item} height='400'
+        width='400' style="object-fit: cover">`)
+    } catch(err) {
+        alert("Page number must be in range from 1 to 5")
     }
-    checkTime()
-    }
-        catch(err){
-            alert("Page should be greater than 0 and less than 6")
-    }
+    
 }
 
 function checkTime(){
     let timeNow = new Date()
-    timeNow = timeNow.getUTCMinutes()
-    let timeThen = localStorage.getItem('time')
 
-    if(timeNow - timeThen >= 10){
+    if(timeNow.getUTCMinutes() - localStorage.getItem('time') >= 1){
         localStorage.removeItem('token')
         localStorage.removeItem('time')
-        document.location.replace('./login.html')
+        document.location.replace('./index.html')
+    }
+}
+
+function updateLocation(){
+    if(location.search != `?page=${localStorage.getItem('page')}`){
+        location.search = `?page=${localStorage.getItem('page')}`
     }
 }
