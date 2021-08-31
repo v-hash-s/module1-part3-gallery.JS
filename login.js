@@ -1,69 +1,56 @@
 const url =  'https://glq7fjiy07.execute-api.us-east-1.amazonaws.com/api/login';
 const form = document.getElementById('login');
-
-import regex  from './regexPassword.js'
+const regex = /^\b([0-9A-Z])+\b$/gi
 
 class User{
     constructor(email, password) {
         this.email = email;
         this.password = password;
     }
-}
 
-
-function createUser(){
-    let userEmail = document.getElementById("userEmail").value;
-    let userPassword = document.getElementById("userPassword").value;
-
-    if(userPassword.match(regex)){
-        const user = new User(userEmail, userPassword);
-
-        return user;
-    } else {
-        alert('Invalid form of password')
-
-        return false;
+    checkPassword(){
+        if(this.password.match(regex)) return true
+        return alert("Invalid form of password")
     }
-
 }
 
-let submit = form.onsubmit = async(event) => {
+function getUserData(){
+    let userData = {}
+    return userData = {
+        email: document.getElementById("userEmail").value,
+        password: document.getElementById("userPassword").value,
+    }
+}
+
+form.addEventListener('submit', async(event) => {
     event.preventDefault();
 
-    try {
-        let userData = createUser();
+    let {email, password} = getUserData() 
+    let user = new User(email, password)
 
-        if(!userData){
-            return false;
-        }
-        
+    if(!user.checkPassword()) return;
+
+    try {
         let response = await fetch(url, {
         method: "POST",
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(userData)
+        body: JSON.stringify(user)
     });
-
         let result = await response.json();
 
-        if(result.errorMessage){
-            alert(result.errorMessage)
-            return false;
-        }
+        if(result.errorMessage) return alert(result.errorMessage)            
         
-        let token = result.token;
-        localStorage.setItem('token', token)
+        localStorage.setItem('token', result.token)
 
         if(localStorage.getItem('token')){
             let time = new Date()
-            time = time.getUTCMinutes()
-            localStorage.setItem('time', time)
+            localStorage.setItem('time', time.getUTCMinutes())
             document.location.replace('./gallery.html')
         }
 
     } catch(err){
         alert(err.message);
     }
-
-}
+})
